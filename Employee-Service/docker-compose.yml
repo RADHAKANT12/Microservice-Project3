@@ -1,0 +1,51 @@
+version: "3.8"
+services:
+  mysqldb:
+    container_name: mysqldb
+    image: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: emp5
+    networks:
+      springboot-mysql-net:
+
+  phpmyadmin:
+    container_name: phpmyadmin
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - "8082:80"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      PMA_HOST: mysqldb
+    depends_on:
+      - mysqldb
+    networks:
+      springboot-mysql-net:
+
+  employeems:
+    container_name: employeems
+    image: radhakant/employeems
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mysqldb
+    restart: on-failure
+    networks:
+      springboot-mysql-net:
+  departmentms:
+    container_name: departmentms
+    image: radhakant/departmentms
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    depends_on:
+      - mysqldb
+    restart: on-failure
+    networks:
+      springboot-mysql-net:
+
+networks:
+  springboot-mysql-net:
